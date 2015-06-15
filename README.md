@@ -1,9 +1,11 @@
+<!-- ### LOOKING FOR MAINTAINER. PLEASE PING [@voronianski](https://twitter.com/voronianski)! -->
 # ngDialog
 
 [![build status](http://img.shields.io/travis/likeastore/ngDialog.svg)](https://travis-ci.org/likeastore/ngDialog)
 [![npm version](http://badge.fury.io/js/ng-dialog.svg)](http://badge.fury.io/js/ng-dialog)
 [![github tag](https://img.shields.io/github/tag/likeastore/ngDialog.svg)](https://github.com/likeastore/ngDialog/tags)
 [![Download Count](https://img.shields.io/npm/dm/ng-dialog.svg)](http://www.npmjs.com/package/ng-dialog)
+
 
 > Modal dialogs and popups provider for [Angular.js](http://angularjs.org/) applications.
 
@@ -101,6 +103,12 @@ ngDialog.open({
 });
 ```
 
+##### ``controllerAs {String} ``
+
+You could optionally specify `controllerAs` parameter for your controller. Then inside your template it will be possible to refer this controller by value specified by `controllerAs`.
+
+Usage of `controllerAs` syntax is currently recommended by Angular team.
+
 ##### ``resolve {Object.<string, function>=}``
 An optional map of dependencies which should be injected into the controller.
 If any of these dependencies are promises, ngDialog will wait for them all to be resolved
@@ -180,6 +188,10 @@ ngDialog.open({
 ```
 
 Check [themes](https://github.com/likeastore/ngDialog#themes) block to learn more.
+
+##### ``disableAnimation {Boolean}``
+
+If ``true`` then animation for the dialog will be disabled, default ``false``.
 
 ##### ``overlay {Boolean}``
 
@@ -273,13 +285,13 @@ Specifies the value for the ``role`` attribute that should be applied to the dia
 
 See [Accessibility](#Accessibility) for more information.
 
-##### ``ariaLaballedById {String}``
+##### ``ariaLabelledById {String}``
 
 Specifies the value for the ``aria-labelledby`` attribute that should be applied to the dialog element. Default value is ``null`` (unspecified)
 
 If specified, the value is not validated against the DOM. See [Accessibility](#Accessibility) for more information.
 
-##### ``ariaLaballedBySelector {String}``
+##### ``ariaLabelledBySelector {String}``
 
 Specifies the CSS selector for the element to be referenced by the ``aria-labelledby`` attribute on the dialog element. Default value is ``null`` (unspecified)
 

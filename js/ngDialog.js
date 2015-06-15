@@ -15,6 +15,7 @@
     var animationEndSupport = isDef(style.animation) || isDef(style.WebkitAnimation) || isDef(style.MozAnimation) || isDef(style.MsAnimation) || isDef(style.OAnimation);
     var animationEndEvent = 'animationend webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend';
     var focusableElementSelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]';
+    var disabledAnimationClass = 'ngdialog-disabled-animation';
     var forceBodyReload = false;
     var scopes = {};
     var openIdStack = [];
@@ -23,6 +24,7 @@
     m.provider('ngDialog', function () {
         var defaults = this.defaults = {
             className: 'ngdialog-theme-default',
+            disableAnimation: false,
             plain: false,
             showClose: true,
             closeByDocument: true,
@@ -107,6 +109,7 @@
                     },
 
                     performCloseDialog: function ($dialog, value) {
+                        var options = $dialog.data('$ngDialogOptions');
                         var id = $dialog.attr('id');
                         var scope = scopes[id];
 
@@ -137,9 +140,9 @@
                             previousFocus.focus();
                         }
 
-                        $rootScope.$broadcast('ngDialog.closing', $dialog);
+                        $rootScope.$broadcast('ngDialog.closing', $dialog, value);
                         dialogsCount = dialogsCount < 0 ? 0 : dialogsCount;
-                        if (animationEndSupport) {
+                        if (animationEndSupport && !options.disableAnimation) {
                             scope.$destroy();
                             $dialog.unbind(animationEndEvent).bind(animationEndEvent, function () {
                                 $dialog.remove();
@@ -147,7 +150,7 @@
                                     $body.removeClass('ngdialog-open');
                                     privateMethods.resetBodyPadding();
                                 }
-                                $rootScope.$broadcast('ngDialog.closed', $dialog);
+                                $rootScope.$broadcast('ngDialog.closed', $dialog, value);
                             }).addClass('ngdialog-closing');
                         } else {
                             scope.$destroy();
@@ -156,7 +159,7 @@
                                 $body.removeClass('ngdialog-open');
                                 privateMethods.resetBodyPadding();
                             }
-                            $rootScope.$broadcast('ngDialog.closed', $dialog);
+                            $rootScope.$broadcast('ngDialog.closed', $dialog, value);
                         }
                         if (defers[id]) {
                             defers[id].resolve({
@@ -393,6 +396,7 @@
                      * - controller {String}
                      * - controllerAs {String}
                      * - className {String} - dialog theme class
+                     * - disableAnimation {Boolean} - set to true to disable animation
                      * - showClose {Boolean} - show close button, default true
                      * - closeByEscape {Boolean} - default true
                      * - closeByDocument {Boolean} - default true
@@ -429,8 +433,6 @@
                         }).then(function (setup) {
                             var template = setup.template,
                                 locals = setup.locals;
-
-                            $templateCache.put(options.template || options.templateUrl, template);
 
                             if (options.showClose) {
                                 template += '<div class="ngdialog-close"></div>';
@@ -469,6 +471,10 @@
 
                             if (options.className) {
                                 $dialog.addClass(options.className);
+                            }
+
+                            if (options.disableAnimation) {
+                                $dialog.addClass(disabledAnimationClass);
                             }
 
                             if (options.appendTo && angular.isString(options.appendTo)) {
@@ -594,7 +600,7 @@
                                 return loadTemplateUrl(tmpl, {cache: false});
                             }
 
-                            return $templateCache.get(tmpl) || loadTemplateUrl(tmpl, {cache: true});
+                            return loadTemplateUrl(tmpl, {cache: $templateCache});
                         }
                     },
 
@@ -662,6 +668,8 @@
                                 if ($dialog.data('$ngDialogOptions').closeByEscape) {
                                     privateMethods.closeDialog($dialog, value);
                                 }
+                            } else {
+                                publicMethods.closeAll(value);
                             }
                         }
 
@@ -712,6 +720,7 @@
                         showClose: attrs.ngDialogShowClose === 'false' ? false : (attrs.ngDialogShowClose === 'true' ? true : defaults.showClose),
                         closeByDocument: attrs.ngDialogCloseByDocument === 'false' ? false : (attrs.ngDialogCloseByDocument === 'true' ? true : defaults.closeByDocument),
                         closeByEscape: attrs.ngDialogCloseByEscape === 'false' ? false : (attrs.ngDialogCloseByEscape === 'true' ? true : defaults.closeByEscape),
+                        overlay: attrs.ngDialogOverlay === 'false' ? false : (attrs.ngDialogOverlay === 'true' ? true : defaults.overlay),
                         preCloseCallback: attrs.ngDialogPreCloseCallback || defaults.preCloseCallback
                     });
                 });
