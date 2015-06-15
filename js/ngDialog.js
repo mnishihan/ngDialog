@@ -4,18 +4,7 @@
  * (c) 2013-2015 MIT License, https://likeastore.com
  */
 
-(function (root, factory) {
-    if (typeof module !== 'undefined' && module.exports) {
-        // CommonJS
-        module.exports = factory(require('angular'));
-    } else if (typeof define === 'function' && define.amd) {
-        // AMD
-        define(['angular'], factory);
-    } else {
-        // Global Variables
-        factory(root.angular);
-    }
-}(this, function (angular) {
+(function (angular) {
     'use strict';
 
     var m = angular.module('ngDialog', []);
@@ -731,4 +720,4 @@
     }]);
 
     return m;
-}));
+})(this.angular);
